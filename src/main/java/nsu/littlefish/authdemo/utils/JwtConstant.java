@@ -11,7 +11,17 @@ public class JwtConstant {
     /**
      * 过期时间
      */
-    public static final int EXPIRES_DATE = 15 * 60 * 60;
-
-    public static final String SECRETKEY = "999999";
+    public static final int EXPIRES_DATE = 15 * 60 * 1000;
+    /**
+     * 密钥
+     */
+    public static final String SECRET_KEY = "999999";
+    /**
+     * 自动刷新token周期
+     */
+    public static final Long REFRESH_DATE = 24 * 60 * 60 * 1000L;
+    /**
+     * 30秒
+     */
+    public static final int THIRTY_SECONDS = 30 * 1000;
 }

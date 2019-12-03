@@ -28,10 +28,11 @@ public class JwtUtils {
         headMap.put("alg", algorithm.getValue());
         headMap.put("typ", "JWT");
         claimsMap.put("userName", userName);
+        claimsMap.put("refresh", JwtConstant.REFRESH_DATE);
         JwtBuilder builder = Jwts.builder()
                 .setHeader(headMap)
                 .setClaims(claimsMap)
-                .signWith(algorithm, JwtConstant.SECRETKEY);
+                .signWith(algorithm, JwtConstant.SECRET_KEY);
         if (JwtConstant.EXPIRES_DATE > 0) {
             long expiresDate = JwtConstant.EXPIRES_DATE + now;
             builder.setExpiration(new Date(expiresDate));
@@ -52,7 +53,7 @@ public class JwtUtils {
             return null;
         }
         try {
-            claims = Jwts.parser().setSigningKey(JwtConstant.SECRETKEY).parseClaimsJws(token).getBody();
+            claims = Jwts.parser().setSigningKey(JwtConstant.SECRET_KEY).parseClaimsJws(token).getBody();
         } catch (Exception e) {
             log.warn("token解析失败，token过期或非法token");
         }
@@ -82,11 +83,23 @@ public class JwtUtils {
     public static String getUserName(String token) {
         Claims claims = parseJWT(token);
         if (claims == null) {
-            log.warn("验证失败，token过期或非法token");
+            throw new RuntimeException("token过期或非法token");
         }
         return (String) claims.get("userName");
     }
 
+    /**
+     * 获取token过期时间
+     * @param token
+     * @return
+     */
+    public static Long getExpire(String token) {
+        Claims claims = parseJWT(token);
+        if (claims == null) {
+            throw new RuntimeException("token过期或非法token");
+        }
+        return claims.getExpiration().getTime();
+    }
     public static void main(String[] args) {
         String token = createToken("yuzheng");
         log.info("token:" + token);

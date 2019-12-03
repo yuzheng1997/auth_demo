@@ -1,8 +1,12 @@
 package nsu.littlefish.authdemo.interceptor;
 
+import com.auth0.jwt.JWT;
 import lombok.extern.slf4j.Slf4j;
 import nsu.littlefish.authdemo.annotation.OnMissAuth;
+import nsu.littlefish.authdemo.utils.JwtConstant;
 import nsu.littlefish.authdemo.utils.JwtUtils;
+import nsu.littlefish.authdemo.utils.RedisUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -22,20 +26,41 @@ import java.lang.reflect.Method;
  */
 @Slf4j
 public class AuthInterceptor implements HandlerInterceptor {
+    @Autowired
+    private RedisUtils redisUtils;
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if (!(handler instanceof HandlerInterceptor)) {
             return true;
         }
+        Long tokenExpire = 0L;
+        Long now = System.currentTimeMillis();
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         log.info("拦截：" + handlerMethod.getShortLogMessage());
         Method method = handlerMethod.getMethod();
+        // 带有OnMissAuth注解的类放行
         if (method.isAnnotationPresent(OnMissAuth.class)) {
             return true;
         } else {
             String token = request.getHeader("token");
             if (StringUtils.isEmpty(token)) {
                 throw new RuntimeException("请先登录！");
+            }
+            tokenExpire = JwtUtils.getExpire(token);
+            long diff = tokenExpire - now;
+            /**
+             * 距离过期时间还有30s时向客户端发送新的token令牌
+             * 并将token作为key存放在redis中30s，防止同时的多个请求，造成请求失败
+              */
+            if (diff > 0 && diff < JwtConstant.THIRTY_SECONDS) {
+                boolean hasKey = redisUtils.hasKey(token);
+                if (hasKey) {
+                    return true;
+                } else {
+                    redisUtils.set(token, System.currentTimeMillis() + "");
+                    redisUtils.expire(token, 30);
+                    JwtUtils.createToken(JwtUtils.getUserName(token));
+                }
             }
             Boolean result = JwtUtils.validToken(token);
             if (!result) {
