@@ -100,10 +100,4 @@ public class JwtUtils {
         }
         return claims.getExpiration().getTime();
     }
-    public static void main(String[] args) {
-        String token = createToken("yuzheng");
-        log.info("token:" + token);
-        String userName = getUserName(token);
-        log.info("userName:" + userName);
-    }
 }

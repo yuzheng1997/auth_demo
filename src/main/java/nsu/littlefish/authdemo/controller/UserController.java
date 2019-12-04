@@ -2,13 +2,12 @@ package nsu.littlefish.authdemo.controller;
 
 import nsu.littlefish.authdemo.annotation.OnMissAuth;
 import nsu.littlefish.authdemo.common.Res;
+import nsu.littlefish.authdemo.exception.AuthException;
 import nsu.littlefish.authdemo.pojo.User;
 import nsu.littlefish.authdemo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author ：yuzheng
@@ -24,11 +23,16 @@ public class UserController {
     private UserService userService;
     @OnMissAuth
     @PostMapping("/login")
-    public Res<User> login(String username, String password) {
-//        Assert.notNull(user, "error");
+    public Res<String> login(String username, String password) throws Exception{
         Assert.notNull(username, "用户名不能为空！");
         Assert.notNull(password, "密码不能为空！");
         String token = userService.login(username, password);
         return Res.ok(token);
+    }
+    @GetMapping("/{username}")
+    public Res<User> getUserInfo(@PathVariable String username) throws Exception{
+        Assert.notNull(username, "用户名不能为空");
+        User user = userService.getUserByName(username);
+        return Res.ok(user);
     }
 }

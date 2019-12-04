@@ -1,8 +1,8 @@
 package nsu.littlefish.authdemo.interceptor;
 
-import com.auth0.jwt.JWT;
 import lombok.extern.slf4j.Slf4j;
 import nsu.littlefish.authdemo.annotation.OnMissAuth;
+import nsu.littlefish.authdemo.exception.AuthException;
 import nsu.littlefish.authdemo.utils.JwtConstant;
 import nsu.littlefish.authdemo.utils.JwtUtils;
 import nsu.littlefish.authdemo.utils.RedisUtils;
@@ -30,7 +30,7 @@ public class AuthInterceptor implements HandlerInterceptor {
     private RedisUtils redisUtils;
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        if (!(handler instanceof HandlerInterceptor)) {
+        if (!(handler instanceof HandlerMethod)) {
             return true;
         }
         Long tokenExpire = 0L;
@@ -44,7 +44,7 @@ public class AuthInterceptor implements HandlerInterceptor {
         } else {
             String token = request.getHeader("token");
             if (StringUtils.isEmpty(token)) {
-                throw new RuntimeException("请先登录！");
+                throw new AuthException("请重新登录");
             }
             tokenExpire = JwtUtils.getExpire(token);
             long diff = tokenExpire - now;
@@ -59,12 +59,13 @@ public class AuthInterceptor implements HandlerInterceptor {
                 } else {
                     redisUtils.set(token, System.currentTimeMillis() + "");
                     redisUtils.expire(token, 30);
-                    JwtUtils.createToken(JwtUtils.getUserName(token));
+                    String newToken = JwtUtils.createToken(JwtUtils.getUserName(token));
+                    response.setHeader("token", newToken);
                 }
             }
             Boolean result = JwtUtils.validToken(token);
             if (!result) {
-                throw new RuntimeException("401");
+                throw new AuthException("token无效或非法token，请重新登录");
             }
             return true;
         }

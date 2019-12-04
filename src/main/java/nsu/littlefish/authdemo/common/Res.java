@@ -11,31 +11,43 @@ import lombok.Data;
  */
 @Data
 public class Res<T> {
-    private int code;
+    private String code;
     private String msg;
     private T date;
 
     public Res() {
-        this.code = 1;
+        this.code = "1";
         this.msg = "成功";
     }
 
-    public Res(int code, String msg) {
+    public Res(String code, String msg) {
         this.code = code;
         this.msg = msg;
     }
 
-    public Res(int code, String msg, T date) {
+    public Res(String code, String msg, T date) {
         this.code = code;
         this.msg = msg;
-        this.date = (T) date;
+        this.date = date;
+    }
+
+    public Res(String msg) {
+        this.msg = msg;
     }
 
     public static Res ok(Object data) {
-        return new Res(0, "成功", data);
+        return new Res("0", "成功", data);
     }
 
     public static Res failed(Object data) {
-        return new Res(1, "失败", data);
+        return new Res("1", "失败", data);
+    }
+
+    public static Res error(String code, String msg) {
+        return new Res(code, msg);
+    }
+
+    public static Res error(String msg) {
+        return new Res(msg);
     }
 }

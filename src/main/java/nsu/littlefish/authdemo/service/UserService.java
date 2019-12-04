@@ -12,11 +12,11 @@ import nsu.littlefish.authdemo.pojo.User;
 public interface UserService {
     /**
      * 根据用户名获取用户信息服务
-     *
+     * @Exception
      * @param username
      * @return
      */
-    User getUserById(String username);
+    User getUserByName(String username) throws Exception;
 
     /**
      * 登录
@@ -25,5 +25,5 @@ public interface UserService {
      * @param password 密码
      * @return
      */
-    String login(String userName, String password);
+    String login(String userName, String password) throws Exception;
 }
