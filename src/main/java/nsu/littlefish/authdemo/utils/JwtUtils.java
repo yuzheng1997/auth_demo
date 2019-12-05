@@ -20,14 +20,14 @@ import java.util.HashMap;
  */
 @Slf4j
 public class JwtUtils {
-    public static String createToken(String userName) {
+    public static String createToken(String userId) {
         SignatureAlgorithm algorithm = SignatureAlgorithm.HS256;
         long now = System.currentTimeMillis();
         HashMap<String, Object> headMap = new HashMap<>();
         HashMap<String, Object> claimsMap = new HashMap<>();
         headMap.put("alg", algorithm.getValue());
         headMap.put("typ", "JWT");
-        claimsMap.put("userName", userName);
+        claimsMap.put("userId", userId);
         claimsMap.put("refresh", JwtConstant.REFRESH_DATE);
         JwtBuilder builder = Jwts.builder()
                 .setHeader(headMap)
@@ -80,12 +80,12 @@ public class JwtUtils {
      * @param token
      * @return
      */
-    public static String getUserName(String token) {
+    public static String getUserId(String token) {
         Claims claims = parseJWT(token);
         if (claims == null) {
             throw new RuntimeException("token过期或非法token");
         }
-        return (String) claims.get("userName");
+        return (String) claims.get("userId");
     }
 
     /**

@@ -26,12 +26,21 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     @Override
+    public User getUserById(String userId) throws Exception {
+        User user = userMapper.selectByPrimaryKey(userId);
+        if (null == user) {
+            throw new CustomException(ExceptionCostant.BAD_REQUEST, "该用户用户不存在");
+        }
+        return user;
+    }
+
+    @Override
     public User getUserByName(String username) throws Exception {
         User user = userMapper.getUserByUserName(username);
         if (null == user) {
             throw new CustomException(ExceptionCostant.BAD_REQUEST, "用户不存在,请检查用户名");
         }
-        return userMapper.getUserByUserName(username);
+        return user;
     }
 
     @Override
@@ -41,7 +50,7 @@ public class UserServiceImpl implements UserService {
             log.warn("用户名或密码错误！");
             return null;
         }
-        String token = JwtUtils.createToken(userName);
+        String token = JwtUtils.createToken(user.getUserId());
         return token;
     }
 }

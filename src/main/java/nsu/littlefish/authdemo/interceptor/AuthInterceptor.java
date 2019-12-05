@@ -59,7 +59,7 @@ public class AuthInterceptor implements HandlerInterceptor {
                 } else {
                     redisUtils.set(token, System.currentTimeMillis() + "");
                     redisUtils.expire(token, 30);
-                    String newToken = JwtUtils.createToken(JwtUtils.getUserName(token));
+                    String newToken = JwtUtils.createToken(JwtUtils.getUserId(token));
                     response.setHeader("token", newToken);
                 }
             }
