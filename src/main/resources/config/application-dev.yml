@@ -17,6 +17,8 @@ spring:
     password:
 #      超时时间
     timeout: 2000ms
+  swagger:
+    enabled: true
 # MyBatis
 mybatis:
   # 搜索指定包别名

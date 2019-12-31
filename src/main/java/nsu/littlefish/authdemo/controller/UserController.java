@@ -1,5 +1,8 @@
 package nsu.littlefish.authdemo.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import nsu.littlefish.authdemo.annotation.OnMissAuth;
 import nsu.littlefish.authdemo.common.Res;
 import nsu.littlefish.authdemo.exception.AuthException;
@@ -18,19 +21,23 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("user")
+@Api(tags = {"用户"})
 public class UserController {
     @Autowired
     private UserService userService;
+    @ApiOperation(value = "登录")
     @OnMissAuth
     @PostMapping("/login")
-    public Res<String> login(String username, String password) throws Exception{
+    public Res<String> login(@ApiParam(name = "username",value = "用户名", required = true) String username,
+                             @ApiParam(name = "password",value = "密码", required = true) String password) throws Exception{
         Assert.notNull(username, "用户名不能为空！");
         Assert.notNull(password, "密码不能为空！");
         String token = userService.login(username, password);
         return Res.ok(token);
     }
     @GetMapping("/{username}")
-    public Res<User> getUserInfo(@PathVariable String username) throws Exception{
+    @ApiOperation(value = "获取用户信息")
+    public Res<User> getUserInfo(@PathVariable @ApiParam(name="username",value="用户名",required = true) String username) throws Exception{
         Assert.notNull(username, "用户名不能为空");
         User user = userService.getUserByName(username);
         return Res.ok(user);

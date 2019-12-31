@@ -16,6 +16,7 @@
   <select id="getUserByUserName" parameterType="String" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"></include>
+        from user
         where user_name = #{userName}
   </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
