@@ -1,6 +1,8 @@
 package nsu.littlefish.authdemo.service.impl;
 
+import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
+import nsu.littlefish.authdemo.annotation.SystemLog;
 import nsu.littlefish.authdemo.exception.AuthException;
 import nsu.littlefish.authdemo.exception.CustomException;
 import nsu.littlefish.authdemo.exception.ExceptionCostant;
@@ -27,6 +29,7 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     @Override
+    @SystemLog
     public User getUserById(String userId) throws Exception {
         User user = userMapper.selectByPrimaryKey(userId);
         if (null == user) {
@@ -36,6 +39,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @SystemLog
     public User getUserByName(String username) throws Exception {
         User user = userMapper.getUserByUserName(username);
         if (null == user) {
@@ -45,6 +49,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @SystemLog
     public String login(String userName, String password) throws Exception{
         User user = userMapper.getUserByUserName(userName);
         if (user == null || !user.getPassword().equals(password)) {

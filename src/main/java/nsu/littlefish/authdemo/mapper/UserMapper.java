@@ -1,10 +1,12 @@
 package nsu.littlefish.authdemo.mapper;
 
 import nsu.littlefish.authdemo.pojo.User;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@Mapper
 public interface UserMapper {
     /**
      * 根据名字查询用户
