@@ -1,6 +1,7 @@
 package nsu.littlefish.authdemo.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import nsu.littlefish.authdemo.exception.AuthException;
 import nsu.littlefish.authdemo.exception.CustomException;
 import nsu.littlefish.authdemo.exception.ExceptionCostant;
 import nsu.littlefish.authdemo.mapper.UserMapper;
@@ -48,7 +49,7 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.getUserByUserName(userName);
         if (user == null || !user.getPassword().equals(password)) {
             log.warn("用户名或密码错误！");
-            return null;
+            throw new AuthException("用户名或密码错误！");
         }
         String token = JwtUtils.createToken(user.getUserId());
         return token;
