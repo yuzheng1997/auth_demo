@@ -41,7 +41,7 @@ public class LogAspect {
             throwable.printStackTrace();
         }
         long useTime = System.currentTimeMillis() - beginTime;
-        log.info(className+"."+methodName + ":执行结束。总耗时："+useTime);
+        log.info(className+"."+methodName + ":执行结束。总耗时："+useTime+"ms");
         return result;
     }
 }
